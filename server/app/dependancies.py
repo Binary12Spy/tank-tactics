@@ -1,0 +1,27 @@
+from db.database_manager import DatabaseManager
+from auth_manager import AuthManager
+
+from db.crud.user_account import UserCRUD
+
+from config import settings
+
+db_manager = DatabaseManager()
+db_manager.create_all()
+
+auth_manager = AuthManager(
+    secret_key = settings.jwt_secret_key,
+    token_expiry_minutes = settings.jwt_lifetime_minutes
+)
+
+def get_db():
+    db = db_manager.get_session()
+    try:
+        yield db
+    finally:
+        db.close()
+        
+def get_auth_manager():
+    return auth_manager
+
+def get_user_crud():
+    return UserCRUD(db_manager.get_session())

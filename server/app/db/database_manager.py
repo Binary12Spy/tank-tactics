@@ -1,20 +1,23 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-import os
+from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy import create_engine, Engine
 
-from app.config import settings
+from db.database import database
+from config import settings
+from .model import *
 
-# Use SQLite for development and PostgreSQL for production
-DATABASE_URL = settings.database_url if os.getenv("ENV") != "production" else settings.database_url_prod
-
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+class DatabaseManager:
+    _engine: Engine = None
+    _session: scoped_session 
+    
+    def __init__(self) -> None:
+        self._engine = create_engine(settings.database_url)
+        self._session = scoped_session(sessionmaker(bind = self._engine))
+        
+    def get_session(self) -> scoped_session:
+        return self._session()
+    
+    def create_all(self) -> None:
+        database.metadata.create_all(self._engine)
+    
+    def drop_all(self) -> None:
+        database.metadata.drop_all(self._engine)

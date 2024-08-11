@@ -1,9 +1,14 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
+import secrets
+import base64
 import os
 
 class Settings(BaseSettings):
-    database_url: str = "sqlite:///./test.db"
-    database_url_prod: str = os.getenv("DATABASE_URL_PROD", "postgresql://user:password@localhost/dbname")
+    server_host: str = "0.0.0.0"
+    server_port: int = 8000
+    database_url: str = os.getenv('DATABASE_URL', 'sqlite:///dev.sqlite3')
+    jwt_secret_key: str = os.getenv('JWT_SECRET_KEY', base64.urlsafe_b64encode(secrets.token_bytes(32)).decode())
+    jwt_lifetime_minutes: int = 120
 
     class Config:
         env_file = ".env"
