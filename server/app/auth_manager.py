@@ -71,3 +71,12 @@ class AuthManager:
         :return: True if the password matches, False otherwise.
         """
         return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
+    
+    def generate_join_code(self) -> str:
+        """
+        Generates a random 6-character alphanumeric code.
+        :return: The generated join code.
+        """
+        import random
+        import string
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))

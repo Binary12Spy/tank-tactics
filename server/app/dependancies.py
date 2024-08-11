@@ -1,7 +1,7 @@
 from db.database_manager import DatabaseManager
 from auth_manager import AuthManager
 
-from db.crud.user_account import UserCRUD
+from db.crud import *
 
 from config import settings
 
@@ -20,8 +20,11 @@ def get_db():
     finally:
         db.close()
         
-def get_auth_manager():
+def get_auth_manager() -> AuthManager:
     return auth_manager
 
-def get_user_crud():
+def get_user_crud() -> UserCRUD:
     return UserCRUD(db_manager.get_session())
+
+def get_game_crud() -> GameCRUD:
+    return GameCRUD(db_manager.get_session())

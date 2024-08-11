@@ -35,6 +35,6 @@ class UUID(TypeDecorator):
 
 class BaseModel(database):
     __abstract__ = True
-    id = Column(UUID(), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))

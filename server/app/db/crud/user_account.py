@@ -13,8 +13,12 @@ class UserCRUD:
         self._db_session = db_session
 
     def create_user(self, username: str, email: EmailStr, password: str) -> UserAccount:
+        user = self.get_user_by_email(email)
+        if user:
+            return user
+        
         hashed_password = self._auth_manager.hash_password(password)
-        new_user = UserAccount(username = username, email = email, hashed_password = hashed_password)
+        new_user = UserAccount(username=username, email=email, hashed_password=hashed_password)
         self._db_session.add(new_user)
         self._db_session.commit()
         return new_user

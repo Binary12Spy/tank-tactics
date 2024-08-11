@@ -3,8 +3,10 @@ from fastapi import FastAPI
 
 import dependancies
 from config import settings
+print(settings.jwt_secret_key)
 
 from api.router.auth_v1 import router as auth_v1
+from api.router.game_state_v1 import router as game_state_v1
 
 app = FastAPI()
 
@@ -17,6 +19,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_v1, prefix="/api")
+app.include_router(game_state_v1, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn

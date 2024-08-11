@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response
 
 from dependancies import auth_manager, get_user_crud
-
 from ..model import UserAccountV1, UserCreateV1, UserLoginV1
 
 router = APIRouter(
@@ -24,7 +23,7 @@ def login_user(user: UserLoginV1):
         raise HTTPException(status_code = 404, detail = "User not found")
     if not auth_manager.verify_password(password = user.password, hashed_password = user_db.hashed_password):
         raise HTTPException(status_code = 404, detail = "Incorrect password")
-    token = auth_manager.create_jwt(user_id = user_db.id)
+    token = auth_manager.create_jwt(user_id = str(user_db.id))
     response = Response()
     response.set_cookie(key = "token", value = token)
     return response
