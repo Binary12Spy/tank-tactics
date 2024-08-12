@@ -1,6 +1,7 @@
 from sqlalchemy.orm import scoped_session
+from uuid import UUID
 
-from ..model.games import Game, GameStatus
+from ..model.game import Game, GameStatus
 
 class GameCRUD:
     _db_session: scoped_session
@@ -21,3 +22,9 @@ class GameCRUD:
         self._db_session.add(new_game)
         self._db_session.commit()
         return new_game
+    
+    def get_game_by_join_code(self, join_code: str) -> Game:
+        return self._db_session.query(Game).filter(Game.join_code == join_code).first()
+    
+    def get_game_by_id(self, game_id: UUID) -> Game:
+        return self._db_session.query(Game).filter(Game.id == game_id).first()

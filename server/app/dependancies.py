@@ -28,3 +28,6 @@ def get_user_crud() -> UserCRUD:
 
 def get_game_crud() -> GameCRUD:
     return GameCRUD(db_manager.get_session())
+
+def get_game_user_crud() -> GameUserCRUD:
+    return GameUserCRUD(db_manager.get_session())

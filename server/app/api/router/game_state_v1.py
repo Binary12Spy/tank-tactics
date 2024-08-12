@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Cookie, HTTPException, Response
+from typing import List
 
-from dependancies import auth_manager, get_game_crud
+from db.model.game_user import GameUser
+from dependancies import auth_manager, get_game_crud, get_game_user_crud
 from ..model import GameDetailsV1, GameCreateV1
 
 router = APIRouter(
@@ -21,3 +23,44 @@ def create_game(game: GameCreateV1, token: str = Cookie(None)):
     game_crud = get_game_crud()
     game = game_crud.create_game(game.name)
     return game
+
+@router.post("/join-game")
+def join_game(code: str, token: str = Cookie(None)):
+    # Verify the jwt token
+    jwt_payload = None
+    try:
+        jwt_payload = auth_manager.validate_jwt(token)
+        if not jwt_payload:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    game_crud = get_game_crud()
+    game_user_crud = get_game_user_crud()
+    # Get the game by the join code
+    game = game_crud.get_game_by_join_code(code)
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found")
+    game = game_user_crud.create_game_user(game_id = game.id, user_id = jwt_payload.sub)
+    return True
+
+@router.get("/joined-games", response_model = List[GameDetailsV1])
+def get_joined_games(token: str = Cookie(None)):
+    # Verify the jwt token
+    jwt_payload = None
+    try:
+        jwt_payload = auth_manager.validate_jwt(token)
+        if not jwt_payload:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    game_user_crud = get_game_user_crud()
+    games: List[GameUser] = game_user_crud.get_games_by_user_id(user_id = jwt_payload.sub)
+    print(games)
+    # Get game details
+    game_crud = get_game_crud()
+    game_details: List[GameDetailsV1] = []
+    for game in games:
+        game_details.append(game_crud.get_game_by_id(game.game_id))
+    return game_details

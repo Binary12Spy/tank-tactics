@@ -1,8 +1,11 @@
 from sqlalchemy import Column, Enum, Integer, String
+from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
 import uuid
 
 from .base_model import BaseModel, UUID
+
+TABLE_NAME = 'games'
 
 class GameStatus(PyEnum):
     CREATED = 'CREATED'
@@ -10,7 +13,7 @@ class GameStatus(PyEnum):
     FINISHED = 'FINISHED'
 
 class Game(BaseModel):
-    __tablename__ = 'games'
+    __tablename__ = TABLE_NAME
     
     id = Column(UUID(), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String, nullable=False, unique=False)
