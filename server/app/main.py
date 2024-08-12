@@ -3,7 +3,6 @@ from fastapi import FastAPI
 
 import dependancies
 from config import settings
-print(settings.jwt_secret_key)
 
 from api.router.auth_v1 import router as auth_v1
 from api.router.game_state_v1 import router as game_state_v1
