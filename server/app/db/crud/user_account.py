@@ -28,6 +28,9 @@ class UserCRUD:
     
     def get_user_by_email(self, email: EmailStr) -> UserAccount:
         return self._db_session.query(UserAccount).filter(UserAccount.email == email).first()
+    
+    def get_user_by_username(self, username: str) -> UserAccount:
+        return self._db_session.query(UserAccount).filter(UserAccount.username == username).first()
 
     def update_user_email(self, user_id: UUID, new_email: EmailStr) -> UserAccount:
         user = self.get_user_by_id(user_id)

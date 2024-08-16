@@ -9,10 +9,19 @@ router = APIRouter(
     responses = {404: {"description": "Not found"}},
 )
 
+@router.get("/username-available")
+def check_username_availability(username: str):
+    user_crud = get_user_crud()
+    user = user_crud.get_user_by_username(username = username)
+    return not user
+
 @router.post("/register", response_model = UserAccountV1)
 def create_user(user: UserCreateV1):
     user_crud = get_user_crud()
-    user = user_crud.create_user(username = user.username, email = user.email, password = user.password)
+    try:
+        user = user_crud.create_user(username = user.username, email = user.email, password = user.password)
+    except Exception as e:
+        raise HTTPException(status_code = 500, detail = str(e))
     return user
 
 @router.post("/login", response_model = UserAccountV1)

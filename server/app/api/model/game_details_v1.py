@@ -9,6 +9,8 @@ class GameDetails(BaseModel):
     name: str
     status: GameStatus
     join_code: str
+    max_players: int
+    current_players: int
     public: bool
 
     class Config:

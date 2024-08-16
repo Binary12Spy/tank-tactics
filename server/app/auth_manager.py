@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel, ValidationError
+from fastapi import HTTPException
 from typing import Optional
 import bcrypt
 import jwt
@@ -80,3 +81,19 @@ class AuthManager:
         import random
         import string
         return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    
+    def fastapi_validate_jwt(self, token: str) -> JwtData:
+        """
+        Validates a JWT and returns the decoded payload as an instance of TokenData if valid.
+        :param token: The JWT string to validate.
+        :return: The decoded token as a TokenData instance.
+        :raises: HTTPException
+        """
+        try:
+            return self.validate_jwt(token)
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail="Token has expired")
+        except jwt.InvalidTokenError:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        except ValidationError as e:
+            raise HTTPException(status_code=500, detail=str(e))
